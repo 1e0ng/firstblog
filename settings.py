@@ -21,6 +21,7 @@ def define_app_options():
     define('smtp_host', 'smtp.xx.com')
     define('smtp_username', 'user@domain')
     define('smtp_password', 'idontknow')
+    define('smtp_port', 465)
 
 
     try:

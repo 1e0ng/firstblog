@@ -21,7 +21,7 @@ def send(to, subject, content):
 
     s = None
     try:
-        s = smtplib.SMTP_SSL(options.smtp_host)
+        s = smtplib.SMTP_SSL(options.smtp_host, options.smtp_port)
         s.login(options.smtp_username, options.smtp_password)
         s.sendmail(msg['From'], [to], msg.as_string())
     except Exception as ex:
