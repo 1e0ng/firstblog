@@ -149,7 +149,7 @@ class UserListHandler(BaseHandler):
         return ans and super(UserListHandler, self).has_permission(url)
 
     def get(self):
-        users = list(self.db.user.find({'role':{'$in':[b for a,b in self.roles[1:]]}}, sort=[('_id', 1)]))
+        users = list(self.db.user.find({'role':{'$in':[b for a,b in self.roles[:]]}}, sort=[('_id', 1)]))
 
         role2sys = {b:a for a, b in self.roles}
         for i, user in enumerate(users):
