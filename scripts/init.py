@@ -47,14 +47,6 @@ class Runner(Scaffold):
             self.db.user.save(debug_user)
             logging.info('Added debug user.')
 
-        site = self.db.site.find_one() or {}
-        if 'name' not in site:
-            site.update({
-                'name': 'First Wiki',
-            })
-            self.db.site.save(site)
-            logging.info('Added site.')
-
 
 if __name__ == '__main__':
     Runner().run()

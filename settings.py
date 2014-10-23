@@ -5,6 +5,8 @@ import logging
 from tornado.options import define
 
 def define_app_options():
+    define('site_name', default='First Blog')
+
     define('debug', default=True)
     define('log_level', default=logging.INFO)
     define('cookie_secret', default='Overide this.')

@@ -101,7 +101,7 @@ class BaseHandler(RequestHandler):
             ('/_', 'edit', 'Edit'),
             ('/upload', 'upload', 'Upload'),
         ] if self.has_permission(i[0])]
-        kwargs['site'] = self.db.site.find_one() or {'name': 'Shire'}
+        kwargs['site'] = options.site_name
 
         return super(BaseHandler, self).render(template, **kwargs)
 
