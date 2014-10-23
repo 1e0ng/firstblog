@@ -35,7 +35,7 @@ class BaseHandler(RequestHandler):
             return self.current_user and self.r % 100 == 0
         if path.startswith('/_'):
             return self.current_user and self.r in (0, 100, 101)
-        return self.current_user
+        return True
 
     def prepare(self):
         uri = self.request.uri
@@ -64,7 +64,7 @@ class BaseHandler(RequestHandler):
 
     def get_current_user(self):
         if options.debug:
-            return dict(role=0, email='debug@local.host')
+            return dict(role=0, email='debug@local.host', name='debug')
 
         user_json = self.get_secure_cookie("user")
         if user_json:
@@ -121,6 +121,11 @@ class BaseHandler(RequestHandler):
     @property
     def m(self):
         return self.current_user['email']
+
+    @property
+    def n(self):
+        return self.current_user['name']
+
 
     @property
     def r(self):

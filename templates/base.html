@@ -40,7 +40,7 @@
                       {% endblock %}
                       <ul class="nav navbar-nav">
                           {% if current_user %}
-                          <li><a href="{{prefix}}/account"><i class="glyphicon glyphicon-user"></i> &nbsp; {{current_user['email']}}</a></li>
+                          <li><a href="{{prefix}}/account"><i class="glyphicon glyphicon-user"></i> &nbsp; {{current_user.name}}</a></li>
                           <li>
                           <a href="{{handler.get_logout_url()}}" id="signout">Sign out</a>
                           </li>
@@ -64,7 +64,7 @@
             </div>
             {{ xsrf_form_html() }}
             <footer>
-                Enjoy Study, 2014
+                {{site.name}} @ 2014
             </footer>
         </div>
         {% block js %}

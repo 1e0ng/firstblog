@@ -11,17 +11,18 @@ from handlers import BaseHandler
 
 class HomeHandler(BaseHandler):
     def get(self):
-        pages = list(self.db.page.find({'deleted': False}, fields={'url':1, 'title':1, 'viewed': 1}))
-        orders = {x['pid']: x['order'] for x in self.db.order.find()}
-        pages.sort(key=lambda x: (orders.get(x['_id'], 0), -long(str(x['_id']), 16)))
-        self.render('page_list.html', pages=pages)
+        pages = list(self.db.page.find({'deleted': False}, sort=[('_id', -1)], limit=30))
+        author_mails = [p['author'] for p in pages]
+        authors = {u['mail']: u['name'] for u in self.db.user.find({'mail':{'$in': author_mails}})}
+        self.render('page_list.html', pages=pages, authors=authors)
 
 class AdminHandler(BaseHandler):
     def get(self):
-        pages = list(self.db.page.find(fields={'url':1, 'title':1, 'viewed': 1, 'deleted':1}))
-        orders = {x['pid']: x['order'] for x in self.db.order.find()}
-        pages.sort(key=lambda x: (orders.get(x['_id'], 0), -long(str(x['_id']), 16)))
-        self.render('_page_list.html', pages=pages)
+        query = {'author': self.m} if self.r != 0 else {}
+        pages = list(self.db.page.find(query, sort=[('_id', -1)], limit=30))
+        author_mails = [p['author'] for p in pages]
+        authors = {u['mail']: u['name'] for u in self.db.user.find({'mail':{'$in': author_mails}})}
+        self.render('_page_list.html', pages=pages, authors=authors)
 
     def post(self):
         m =  self.get_argument('m')
@@ -32,13 +33,12 @@ class AdminHandler(BaseHandler):
         self.write({'ok':1})
 
 class PageEditHandler(BaseHandler):
-    def get(self, url):
-        page = self.db.page.find_one({'url': url}) or {'url': url}
+    def get(self, _id):
+        page = self.db.page.find_one({'_id': ObjectId(_id)}) if _id else {}
         self.render('_page_form.html', page=page)
 
-    def create(self, url, title, content, viewed=0):
+    def create(self, title, content, viewed=0):
         page = {
-            'url': url,
             'title': title,
             'content': content,
             'author': self.m,
@@ -48,39 +48,33 @@ class PageEditHandler(BaseHandler):
         }
         return self.db.page.insert(page)
 
-    def update(self, page, title, content, new_url):
+    def update(self, page, title, content):
         self.db.page.remove({'_id': page['_id']})
-        pid = self.create(new_url, title, content, page['viewed'])
+        pid = self.create(title, content, page['viewed'])
 
         self.db.history.update({'redirect': page['_id']}, {'$set':{'redirect': pid}}, multi=True)
         page['redirect'] = pid
         self.db.history.insert(page)
 
-    def delete(self, url):
-        page = self.db.page.find_one({'url': url})
+    def delete(self, _id):
+        page = self.db.page.find_one({'_id': ObjectId(_id)})
         deleted = not page['deleted']
         self.db.page.update({'_id':page['_id']}, {'$set':{'deleted': deleted}})
 
-    def post(self, url):
+    def post(self, _id):
         action = self.get_argument('action')
         try:
             if action == 'delete':
-                self.delete(url)
+                self.delete(_id)
             else:
                 title = self.get_argument('title')
                 content = self.get_argument('content')
-                new_url = self.get_argument('new_url')
 
-                if new_url != url:
-                    if self.db.page.find_one({'url': new_url}):
-                        raise Exception('URL duplicated')
-
-                page = self.db.page.find_one({'url': url})
-
-                if not page:
-                    self.create(url, title, content)
+                if not _id:
+                    self.create(title, content)
                 else:
-                    self.update(page, title, content, new_url)
+                    page = self.db.page.find_one({'_id': ObjectId(_id)})
+                    self.update(page, title, content)
         except Exception, e:
             error_msg = unicode(e) or traceback.format_exc()
             logging.warn(traceback.format_exc())
@@ -89,23 +83,11 @@ class PageEditHandler(BaseHandler):
         self.write({'ok':1})
 
 class PageHandler(BaseHandler):
-    def get(self, url):
-        page = self.db.page.find_one({'url': url})
+    def get(self, _id):
+        page = self.db.page.find_one({'_id': ObjectId(_id)})
         if not page:
             raise HTTPError(404)
         self.db.page.update({'_id': page['_id']}, {'$inc': {'viewed': 1}})
         page['content'] = markdown.markdown(page['content'])
         self.render('page.html', page=page)
 
-class HistoryListHandler(BaseHandler):
-    def get(self, url):
-        history = list(self.db.history.find({'url': url}, fields={'modified': 1, 'title': 1, 'author': 1}, sort=[('modified', -1)]))
-        self.render('_history_list.html', history=history)
-
-class HistoryPageHandler(BaseHandler):
-    def get(self, _id):
-        page = self.db.history.find_one({'_id': ObjectId(_id)})
-        if not page:
-            raise HTTPError(404)
-        page['content'] = markdown.markdown(page['content'])
-        self.render('page.html', page=page)

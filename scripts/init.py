@@ -13,11 +13,8 @@ def hash_pwd(pwd, salt):
 class Runner(Scaffold):
     def main(self):
         logging.info('Start to build index...')
-        self.db.page.ensure_index([('url', 1)], unique=True)
-        self.db.img.ensure_index([('url', 1)], unique=True)
         self.db.user.ensure_index([('mail', 1)], unique=True)
         self.db.history.ensure_index([('redirect', 'hashed')])
-        self.db.history.ensure_index([('url', 'hashed')])
         logging.info('Indexes built.')
 
         root_user = self.db.user.find_one({'mail': 'root@root'})
@@ -34,6 +31,21 @@ class Runner(Scaffold):
             root_user['pwd'] = hash_pwd(hash_pwd('802debaed8f55ffc', root_user['mail']), root_user['salt'])
             self.db.user.save(root_user)
             logging.info('Added root user.')
+
+        debug_user = self.db.user.find_one({'mail': 'debug@local.host'})
+        if not debug_user:
+            debug_user = {
+                "name": "debug",
+                "created_at": time.time(),
+                "created_by": "sys",
+                "valid": True,
+                "role": 0,
+                "mail": "debug@local.host",
+                "salt": "dzwOrPqGdgOwBqyV",
+            }
+            debug_user['pwd'] = hash_pwd(hash_pwd('802debaed8f55ffc', debug_user['mail']), debug_user['salt'])
+            self.db.user.save(debug_user)
+            logging.info('Added debug user.')
 
         site = self.db.site.find_one() or {}
         if 'name' not in site:
