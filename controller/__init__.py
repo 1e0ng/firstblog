@@ -10,6 +10,7 @@ import markdown
 from handlers import BaseHandler
 
 class HomeHandler(BaseHandler):
+    allow_anony = True
     def get(self):
         pages = list(self.db.page.find({'deleted': False}, sort=[('_id', -1)], limit=30))
         author_mails = [p['author'] for p in pages]
@@ -83,6 +84,7 @@ class PageEditHandler(BaseHandler):
         self.write({'ok':1})
 
 class PageHandler(BaseHandler):
+    allow_anony = True
     def get(self, _id):
         page = self.db.page.find_one({'_id': ObjectId(_id)})
         if not page:

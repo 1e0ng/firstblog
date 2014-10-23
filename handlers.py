@@ -33,7 +33,7 @@ class BaseHandler(RequestHandler):
     def has_permission(self, path):
         if path  == '/users' or path.startswith('/user/'):
             return self.current_user and self.r % 100 == 0
-        if path.startswith('/_'):
+        if path.startswith('/_') or path == '/upload':
             return self.current_user and self.r in (0, 100, 101)
         return True
 
