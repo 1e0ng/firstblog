@@ -43,12 +43,12 @@ def send(to, subject, content):
     TEXT = content
 
     message = """\
-    From: %s
-    To: %s
-    Subject: %s
-    
-    %s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+From: %s
+To: %s
+Subject: %s
+
+%s
+""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
 
     p = os.popen("%s -t -i -f %s" % (SENDMAIL, FROM), "w")
     p.write(message)
