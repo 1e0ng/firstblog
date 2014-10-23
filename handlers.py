@@ -305,6 +305,7 @@ class SigninHandler(BaseHandler):
             'email': mail,
             'role': user['role'],
             'login_sn': gen_salt(),
+            'name': user['name'],
         }
         self.set_secure_cookie(
             "user",
