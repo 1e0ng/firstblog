@@ -91,5 +91,6 @@ class PageHandler(BaseHandler):
             raise HTTPError(404)
         self.db.page.update({'_id': page['_id']}, {'$inc': {'viewed': 1}})
         page['content'] = markdown.markdown(page['content'])
-        self.render('page.html', page=page)
+        author = self.db.user.find_one({'mail': page['author']})
+        self.render('page.html', page=page, author=author)
 
