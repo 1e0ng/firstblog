@@ -228,12 +228,12 @@ class UserHandler(BaseHandler):
             if insert:
                 send_mail(mail,
                     'Your New Account At %s' % self.request.host,
-                    'Hi, %s!<br>' % name +
-                    'a new accont has been created for you. <br>' +
-                    'Website: %s<br>' % self.request.host +
-                    'Username: %s<br>' % mail +
-                    'Password: %s<br>' % plain_pwd +
-                    'Modify your password once you login. <br>' +
+                    'Hi, %s!\n' % name +
+                    'a new accont has been created for you. \n' +
+                    'Website: %s\n' % self.request.host +
+                    'Username: %s\n' % mail +
+                    'Password: %s\n' % plain_pwd +
+                    'Modify your password once you login. \n' +
                     'Thanks.',
                     )
 
