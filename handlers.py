@@ -102,6 +102,7 @@ class BaseHandler(RequestHandler):
             ('/upload', 'upload', 'Upload'),
         ] if self.has_permission(i[0])]
         kwargs['site'] = options.site_name
+        kwargs['footer'] = options.footer
 
         return super(BaseHandler, self).render(template, **kwargs)
 

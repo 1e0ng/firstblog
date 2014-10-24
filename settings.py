@@ -6,6 +6,7 @@ from tornado.options import define
 
 def define_app_options():
     define('site_name', default='First Blog')
+    define('footer', default='First Blog @ 2104')
 
     define('debug', default=True)
     define('log_level', default=logging.INFO)
