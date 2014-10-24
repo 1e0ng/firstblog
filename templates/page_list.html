@@ -10,9 +10,9 @@
         {% endif %}
         {% for page in pages %}
         <a href="/paper/{{page._id}}" class="list-group-item">
-            &nbsp;&nbsp;<span style="min-width:200px;">{{page.title}}</span>
+            &nbsp;&nbsp;<span style="min-width:250px;">{{page.title}}</span>
             &nbsp;&nbsp;<span style="min-width:200px;">{{authors[page.author]}}</span>
-            &nbsp;&nbsp;<span class="small">{{page._id.generation_time.strftime('%Y-%m-%d')}}</span>
+            &nbsp;&nbsp;<span class="small timestamp">{{page.created}}</span>
             <span class="badge">{{page.viewed}}</span>
         </a>
         {% endfor %}

@@ -12,7 +12,7 @@ from handlers import BaseHandler
 class HomeHandler(BaseHandler):
     allow_anony = True
     def get(self):
-        pages = list(self.db.page.find({'deleted': False}, sort=[('_id', -1)], limit=30))
+        pages = list(self.db.page.find({'deleted': False}, sort=[('created', -1)], limit=30))
         author_mails = [p['author'] for p in pages]
         authors = {u['mail']: u['name'] for u in self.db.user.find({'mail':{'$in': author_mails}})}
         self.render('page_list.html', pages=pages, authors=authors)
@@ -20,7 +20,7 @@ class HomeHandler(BaseHandler):
 class AdminHandler(BaseHandler):
     def get(self):
         query = {'author': self.m} if self.r != 0 else {}
-        pages = list(self.db.page.find(query, sort=[('_id', -1)], limit=30))
+        pages = list(self.db.page.find(query, sort=[('created', -1)], limit=30))
         author_mails = [p['author'] for p in pages]
         authors = {u['mail']: u['name'] for u in self.db.user.find({'mail':{'$in': author_mails}})}
         self.render('_page_list.html', pages=pages, authors=authors)
@@ -38,7 +38,8 @@ class PageEditHandler(BaseHandler):
         page = self.db.page.find_one({'_id': ObjectId(_id)}) if _id else {}
         self.render('_page_form.html', page=page)
 
-    def create(self, title, content, viewed=0):
+    def create(self, title, content, viewed=0, created=None):
+        created = created or time.time()
         page = {
             'title': title,
             'content': content,
@@ -46,12 +47,13 @@ class PageEditHandler(BaseHandler):
             'modified': time.time(),
             'viewed': viewed,
             'deleted': False,
+            'created': created,
         }
         return self.db.page.insert(page)
 
     def update(self, page, title, content):
         self.db.page.remove({'_id': page['_id']})
-        pid = self.create(title, content, page['viewed'])
+        pid = self.create(title, content, page['viewed'], page.get('created', page.get('modified')))
 
         self.db.history.update({'redirect': page['_id']}, {'$set':{'redirect': pid}}, multi=True)
         page['redirect'] = pid

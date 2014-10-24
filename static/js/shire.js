@@ -120,7 +120,6 @@ $(function() {
 
     $('.timestamp').each(function() {
         var d = format_ts($(this).text());
-        console.log(d);
         $(this).text(d);
     });
 });

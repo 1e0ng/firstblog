@@ -10,9 +10,9 @@
         {% endif %}
         {% for page in pages %}
         <a href="/_/{{page._id}}" class="list-group-item" id="{{page._id}}">
-            &nbsp;&nbsp;<span style="min-width:200px;">{{page.title}}</span>
+            &nbsp;&nbsp;<span style="min-width:250px;">{{page.title}}</span>
             &nbsp;&nbsp;<span style="min-width:200px;">{{authors[page.author]}}</span>
-            &nbsp;&nbsp;<span class="small">{{page._id.generation_time.strftime('%Y-%m-%d')}}</span>
+            &nbsp;&nbsp;<span class="small timestamp">{{page.created}}</span>
             &nbsp;&nbsp;{%if page.deleted %}<span class="label label-danger">Deleted</span>{% endif %}
             <span class="badge">{{page.viewed}}</span>
         </a>
