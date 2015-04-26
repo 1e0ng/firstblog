@@ -41,7 +41,10 @@
     <div class="form-group">
         <label class="control-label col-sm-4"></label>
         <div class="col-sm-8">
-            <span class="label label-success">{{user.role_str}}</span>
+            <span class="">{{user.role_str}}</span>
+            {% if user.role == 102 %}
+            <a class="apply btn btn-xs btn-primary" href="mailto:i@liangsun.org?subject=[NA%20Carrer]%20Apply%20to%20be%20an%20editor" target="_blank">Apply to be an editor</a>
+            {% endif %}
         </div>
     </div>
     <div class="form-group">
